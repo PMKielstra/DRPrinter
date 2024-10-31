@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRPrinter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <style type="text/css">
+        {% include 'style.css' %}
+    </style>
+</head>
+<body>
+    <div class="main">
+    <h1>DRP Applications-to-PDF renderer</h1>
+    <p>This site renders CSV files, directly exported from Google Sheets, to PDFs for easy printing and matching.  It's largely for the use of DRP organizers.  If you want to apply for the DRP, you should go <a href="https://wp.math.berkeley.edu/drp/">here</a> instead.</p>
+    <p>The first row is automatically assumed to be the header row.  Rows for the applicants are numbered starting at 2.  If there's a column you want to skip in the PDF but keep in the spreadsheet (email address or name, for example), put a single hyphen character (&ldquo;-&rdquo;) at the beginning of the cell which gives that column its title.  So, to avoid displaying names, go to the cell in the first row of the spreadsheet which represents the title for the &ldquo;Names&rdquo; column and put a hyphen at the start of that cell.</p>
+    <form id="uploadForm">
+        <label for="file">Upload your mentor or mentee CSV:</label>
+        <input type="file" id="file" name="file" required>
+        <br>
+        
+        <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+
+    <div id="waiting" style="display: none"><p>This could take some time.  You will be automatically redirected.  Don't close your browser window.</p>
+        <div class="lds-dual-ring"></div>
+    </div>
+    </div>
+
+    <script>
+        function uploadFile() {
+            const form = document.getElementById("uploadForm");
+            form.style.display = "none";
+
+            const waiting_paragraph = document.getElementById("waiting");
+            waiting_paragraph.style.display = "";
+
+            const fileInput = document.getElementById("file").files[0];
+
+            if (!fileInput) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "render", true);
+
+            // Response handler
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Create a Blob from the response data
+                    const blob = new Blob([xhr.response], { type: xhr.getResponseHeader("Content-Type") });
+                    const url = URL.createObjectURL(blob);
+
+                    // Redirect to the file URL to trigger the download
+                    window.location.href = url;
+                } else {
+                    alert("File upload failed.");
+                }
+            };
+
+            // Configure the response type to handle binary data
+            xhr.responseType = "blob";
+
+            // Send the request
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
