@@ -22,12 +22,12 @@ def process_csv(in_file, out_file):
         bp = None
 
         for rownum, row in enumerate(csvreader, start=2):
-            row_text = '\n\n'.join([f'## Row: {rownum}'] + [
-                f'**{headers[i]}** {elt}'
+            row_text = '\n\n'.join(['## Row: {0}'.format(rownum)] + [
+                '**{0}** {1}'.format(headers[i], elt)
                 for i, elt in enumerate(row)
                 if elt != '' and headers[i][0] != '-'
             ])
-            pdf_path = path.join(tmp_path, f'{rownum}.pdf') # Use a named file in a temp directory to avoid potential weirdness with closing and re-opening
+            pdf_path = path.join(tmp_path, '{0}.pdf'.format(rownum)) # Use a named file in a temp directory to avoid potential weirdness with closing and re-opening
             md2pdf(pdf_file_path=pdf_path, md_content=row_text)
 
             pages = PdfReader(pdf_path).pages
