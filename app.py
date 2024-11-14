@@ -43,3 +43,7 @@ def get_render():
         return jsonify({"waiting": True})
     out_file = executor.futures.pop(RENDER_TASK_NAME).result()
     return flask.send_file(out_file, mimetype="application/pdf", download_name="Printable.pdf")
+
+if __name__ == "__main__":
+    app.run()
+
