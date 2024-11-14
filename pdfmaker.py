@@ -1,7 +1,6 @@
 import csv
 from tempfile import TemporaryDirectory
 from os import path, makedirs
-# from pypdf import PdfWriter
 from pdfrw import PdfReader, PdfWriter, PdfName, PdfDict
 from md2pdf.core import md2pdf
 
