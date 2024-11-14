@@ -1,6 +1,6 @@
 import csv
 from tempfile import TemporaryDirectory
-from os import path, makedirs
+from os import path
 from pdfrw import PdfReader, PdfWriter, PdfName, PdfDict
 from md2pdf.core import md2pdf
 
@@ -12,8 +12,8 @@ def blank_page(template):
     return x
 
 def process_csv(in_file, out_file):
+    if not in_file: return        
     with TemporaryDirectory() as tmp_path:
-        if not in_file: return        
         csvreader = csv.reader(in_file)
         headers = csvreader.__next__()
 

@@ -3,21 +3,13 @@ import io
 
 import flask
 from flask import request, jsonify
-
 from flask_executor import Executor
-
 from pdfmaker import process_csv
 
 app = flask.Flask(__name__)
-
 executor = Executor(app)
 
 UPLOAD_FILE_NAME = "file"
-
-@app.route("/")
-def frontpage():
-    return flask.render_template("index.html")
-
 RENDER_TASK_NAME = "pdf_render"
 
 def task_render(in_file):
@@ -26,6 +18,10 @@ def task_render(in_file):
     in_file.close()
     out_file.seek(0)
     return out_file
+
+@app.route("/")
+def frontpage():
+    return flask.render_template("index.html")
 
 @app.route("/start-render", methods=["POST"])
 def start_render():
@@ -46,4 +42,3 @@ def get_render():
 
 if __name__ == "__main__":
     app.run()
-
