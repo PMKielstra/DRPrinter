@@ -53,33 +53,39 @@
             formData.append("file", fileInput);
 
             const xhr = new XMLHttpRequest();
-            xhr.open("POST", "render", true);
-
-            // Response handler
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    // Create a Blob from the response data
-                    const blob = new Blob([xhr.response], { type: xhr.getResponseHeader("Content-Type") });
-                    const url = URL.createObjectURL(blob);
-                    form.reset();
-                    form.style.display = "";
-                    waiting_paragraph.style.display = "none";
-
-                    // Redirect to the file URL to trigger the download
-                    window.location.href = url;
-                } else {
-                    alert("File upload failed.");
-                }
-            };
-
-            // Configure the response type to handle binary data
-            xhr.responseType = "blob";
+            xhr.open("POST", "start-render", true);
 
             // Send the request
             xhr.send(formData);
 
             form.style.display = "none";
             waiting_paragraph.style.display = "";
+
+            const interval = 1000; // Polling interval in milliseconds
+
+            const poll = () => {
+                fetch("get-render", { method: 'GET' })
+                .then(response => {
+                    // Check if the response is a PDF
+                    if (response.ok && response.headers.get('Content-Type') === 'application/pdf') {
+                        response.blob().then(blob => {
+                            const url = URL.createObjectURL(blob);
+                            form.reset();
+                            form.style.display = "";
+                            waiting_paragraph.style.display = "none";
+                            // Redirect to the file URL to trigger the download
+                            window.location.href = url;
+                        });
+                        return;
+                    }
+
+                    // Schedule the next poll
+                    setTimeout(poll, interval);
+                })
+            };
+
+            poll();
+
         }
     </script>
 </body>
