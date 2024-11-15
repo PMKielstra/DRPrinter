@@ -34,7 +34,7 @@
         </form>
 
         <div id="waiting" style="display: none">
-            <p>This could take some time. You will be automatically redirected. Don't close your browser window.</p>
+            <p>This could take some time. Your download will start automatically. Don't close your browser window.</p>
             <div class="lds-dual-ring"></div>
         </div>
     </div>
@@ -46,15 +46,17 @@
 
     <script>
         const form = document.getElementById("uploadForm");
-        const waiting_paragraph = document.getElementById("waiting");
+        const waitingParagraph = document.getElementById("waiting");
 
         function uploadFile() {
             const fileInput = document.getElementById("file").files[0];
-
+            
             if (!fileInput) {
                 alert("Please select a file to upload.");
                 return;
             }
+            
+            const name = fileInput.name;
 
             const formData = new FormData();
             formData.append("file", fileInput);
@@ -64,7 +66,7 @@
             xhr.send(formData);
 
             form.style.display = "none";
-            waiting_paragraph.style.display = "";
+            waitingParagraph.style.display = "";
 
             const interval = 1000;
 
@@ -74,12 +76,18 @@
                         // Check if the response is a PDF
                         if (response.ok && response.headers.get('Content-Type') === 'application/pdf') {
                             response.blob().then(blob => {
+                                const a = document.createElement("a");
+                                a.style = "display: none";
+                                document.body.appendChild(a);
+                                a.download = name + ".pdf";
                                 const url = URL.createObjectURL(blob);
+                                a.href = url;
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+
                                 form.reset();
                                 form.style.display = "";
-                                waiting_paragraph.style.display = "none";
-                                // Redirect to the file URL to trigger the download
-                                window.location.href = url;
+                                waitingParagraph.style.display = "none";
                             });
                             return;
                         }
