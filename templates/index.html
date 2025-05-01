@@ -28,7 +28,7 @@
             represents the title for the &ldquo;Names&rdquo; column and put a hyphen at the start of that cell.</p>
         <form id="uploadForm">
             <label for="file">Upload your mentor or mentee CSV:</label>
-            <input type="file" id="file" name="file" required>
+            <input type="file" id="file" name="file" accept="text/csv" required>
             <br>
             <button type="button" onclick="uploadFile()">Upload</button>
         </form>
@@ -58,13 +58,14 @@
             
             const name = fileInput.name;
 
-            const formData = new FormData();
-            formData.append("file", fileInput);
+            const formData = new FormData(form);
 
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "start-render", true);
-            xhr.send(formData);
+            fetch("start-render", {
+                method: "POST",
+                body: formData
+            });
 
+            form.reset();
             form.style.display = "none";
             waitingParagraph.style.display = "";
 
@@ -73,7 +74,6 @@
             function poll() {
                 fetch("get-render", { method: 'GET' })
                     .then(response => {
-                        // Check if the response is a PDF
                         if (response.ok && response.headers.get('Content-Type') === 'application/pdf') {
                             response.blob().then(blob => {
                                 const a = document.createElement("a");
@@ -85,7 +85,6 @@
                                 a.click();
                                 window.URL.revokeObjectURL(url);
 
-                                form.reset();
                                 form.style.display = "";
                                 waitingParagraph.style.display = "none";
                             });
