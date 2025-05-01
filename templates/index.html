@@ -30,6 +30,12 @@
             <label for="file">Upload your mentor or mentee CSV:</label>
             <input type="file" id="file" name="file" accept="text/csv" required>
             <br>
+            <input type="checkbox" id="combine" name="combine" checked>
+            <label for="combine">Combine into one PDF</label>
+            <br>
+            <input type="checkbox" id="doublesided" name="doublesided" checked>
+            <label for="doublesided">Double-sided printing (intelligently adds blank pages to ensure that each physical sheet of paper only has data for one applicant; only used when output is combined into one PDF)</label>
+            <br>
             <button type="button" onclick="uploadFile()">Upload</button>
         </form>
 
@@ -47,16 +53,17 @@
     <script>
         const form = document.getElementById("uploadForm");
         const waitingParagraph = document.getElementById("waiting");
+        const fileControl = document.getElementById("file");
 
         function uploadFile() {
-            const fileInput = document.getElementById("file").files[0];
+            const inputFile = fileControl.files[0];
             
-            if (!fileInput) {
+            if (!inputFile) {
                 alert("Please select a file to upload.");
                 return;
             }
             
-            const name = fileInput.name;
+            const name = inputFile.name;
 
             const formData = new FormData(form);
 
@@ -65,7 +72,7 @@
                 body: formData
             });
 
-            form.reset();
+            fileControl.value = null;
             form.style.display = "none";
             waitingParagraph.style.display = "";
 
@@ -74,12 +81,18 @@
             function poll() {
                 fetch("get-render", { method: 'GET' })
                     .then(response => {
-                        if (response.ok && response.headers.get('Content-Type') === 'application/pdf') {
+                        if (response.ok && 
+                                (response.headers.get('Content-Type') === 'application/pdf'
+                                 || response.headers.get('Content-Type') === 'application/zip')) {
                             response.blob().then(blob => {
                                 const a = document.createElement("a");
                                 a.style = "display: none";
                                 document.body.appendChild(a);
-                                a.download = name + ".pdf";
+                                if (response.headers.get('Content-Type') === 'application/pdf') {
+                                    a.download = name + ".pdf";
+                                } else {
+                                    a.download = name + ".zip";
+                                }
                                 const url = URL.createObjectURL(blob);
                                 a.href = url;
                                 a.click();
