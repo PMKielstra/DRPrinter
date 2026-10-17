@@ -12,7 +12,6 @@ itsdangerous==2.2.0
 Jinja2==3.1.4
 markdown2==2.5.1
 MarkupSafe==3.0.2
-md2pdf==1.0.1
 packaging==24.1
 pdfrw==0.4
 pillow==10.4.0
