@@ -18,7 +18,6 @@ def para(str):
     return re.sub(r'\n+', '</p><p>', str)
 
 def process_csv(in_file, out_file, doublesided, combine):
-    if not in_file: return        
     with TemporaryDirectory() as tmp_path:
         csvreader = csv.reader(in_file)
         headers = csvreader.__next__()
@@ -39,7 +38,6 @@ def process_csv(in_file, out_file, doublesided, combine):
             pdf_name = '{0}.pdf'.format(rownum)
             pdf_path = path.join(tmp_path, pdf_name) # Use a named file in a temp directory to avoid potential weirdness with closing and re-opening
             HTML(string=row_text).write_pdf(pdf_path)
-            #md2pdf(pdf_file_path=pdf_path, md_content=row_text)
 
             if not combine:
                 zip.write(pdf_path, pdf_name)
