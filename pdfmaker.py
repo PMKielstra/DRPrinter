@@ -7,6 +7,7 @@ from pdfrw import PdfReader, PdfWriter, PdfName, PdfDict
 from weasyprint import HTML
 from md2pdf.core import md2pdf
 
+
 def blank_page(template):
     x = PdfDict()
     x.Type = PdfName.Page
@@ -14,8 +15,10 @@ def blank_page(template):
     x.MediaBox = template.inheritable.MediaBox
     return x
 
+
 def para(str):
-    return re.sub(r'\n+', '</p><p>', str)
+    return re.sub(r"\n+", "</p><p>", str)
+
 
 def process_csv(in_file, out_file, doublesided, combine):
     with TemporaryDirectory() as tmp_path:
@@ -30,13 +33,18 @@ def process_csv(in_file, out_file, doublesided, combine):
         bp = None
 
         for rownum, row in enumerate(csvreader, start=2):
-            row_text = '\n\n'.join(['<h1>Row: {0}</h1>'.format(rownum)] + [
-                para('<p><b>{0}</b> {1}</p>'.format(headers[i], elt))
-                for i, elt in enumerate(row)
-                if elt != '' and headers[i][0] != '-'
-            ])
-            pdf_name = '{0}.pdf'.format(rownum)
-            pdf_path = path.join(tmp_path, pdf_name) # Use a named file in a temp directory to avoid potential weirdness with closing and re-opening
+            row_text = "\n\n".join(
+                ["<h1>Row: {0}</h1>".format(rownum)]
+                + [
+                    para("<p><b>{0}</b> {1}</p>".format(headers[i], elt))
+                    for i, elt in enumerate(row)
+                    if elt != "" and headers[i][0] != "-"
+                ]
+            )
+            pdf_name = "{0}.pdf".format(rownum)
+            pdf_path = path.join(
+                tmp_path, pdf_name
+            )  # Use a named file in a temp directory to avoid potential weirdness with closing and re-opening
             HTML(string=row_text).write_pdf(pdf_path)
 
             if not combine:

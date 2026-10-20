@@ -6,26 +6,26 @@ const linksList = document.getElementById("linksList");
 
 async function uploadFile() {
     const inputFile = fileControl.files[0];
-    
+
     if (!inputFile) {
         alert("Please select a file to upload.");
         return;
     }
-    
+
     const name = inputFile.name;
 
     const formData = new FormData(form);
 
     const response = await fetch("start-render", {
         method: "POST",
-        body: formData
+        body: formData,
     });
     if (!response.ok) {
         alert("Error! Please try again.");
         return;
     }
     const result = await response.json();
-    const task_name = result.task_name
+    const task_name = result.task_name;
 
     fileControl.value = null;
     form.style.display = "none";
@@ -36,7 +36,7 @@ async function uploadFile() {
     const getUrl = `get-render/${task_name}`;
 
     async function poll() {
-        const response = await fetch(checkUrl, {method: "GET"});
+        const response = await fetch(checkUrl, { method: "GET" });
         if (!response.ok) {
             alert("Error!  Please try again.");
             return;
@@ -54,9 +54,10 @@ async function uploadFile() {
         waitingParagraph.style.display = "none";
 
         linksParagraph.style.display = "";
-        linksList.innerHTML = `<li><a href="${getUrl}" target="_blank">${name}</a></li>` + linksList.innerHTML;
+        linksList.innerHTML =
+            `<li><a href="${getUrl}" target="_blank">${name}</a></li>` +
+            linksList.innerHTML;
     }
 
     poll();
-
 }

@@ -1,62 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRPrinter</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-        rel="stylesheet">
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
-</head>
-
-<body>
-    <div class="main">
-        <h1>DRP Applications-to-PDF Renderer</h1>
-        <p>This site renders CSV files, directly exported from Google Forms, to PDFs for easy printing and matching.
-            It&rsquo;s largely for the use of DRP organizers. If you want to apply for the Berkeley math DRP, you should go <a
-                href="https://wp.math.berkeley.edu/drp/">here</a> instead.</p>
-        <p>The first row is automatically assumed to be the header row. Rows for the applicants are numbered starting at
-            2. If there&rsquo;s a column you want to skip in the PDF but keep in the CSV (email address or name, for
-            example), put a single hyphen character (&ldquo;-&rdquo;) at the beginning of the cell which gives that
-            column its title. In other words, columns with titles that start with hyphens do not appear in the output PDF.</p>
-        <form id="uploadForm">
-            <label for="file">Upload your mentor or mentee CSV:</label>
-            <input type="file" id="file" name="file" accept="text/csv" required>
-            <br>
-            <input type="checkbox" id="combine" name="combine" checked>
-            <label for="combine">Combine into one PDF</label>
-            <br>
-            <input type="checkbox" id="doublesided" name="doublesided" checked>
-            <label for="doublesided">Double-sided printing (intelligently adds blank pages to ensure that each physical sheet of paper only has data for one applicant; only used when output is combined into one PDF)</label>
-            <br>
-            <button type="button" onclick="uploadFile()">Upload</button>
-        </form>
-
-        <div id="waiting" style="display: none">
-            <p>This could take some time. Your download should start automatically. Don&rsquo;t close your browser window.</p>
-            <div class="lds-dual-ring"></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DRPrinter</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <div class="main">
+            <h1>DRP Applications-to-PDF Renderer</h1>
+            <p>This site renders CSV files, directly exported from Google Forms, to PDFs for easy printing and matching. It&rsquo;s largely for the use of DRP organizers. If you want to apply for the Berkeley math DRP, you should go <a href="https://wp.math.berkeley.edu/drp/">here</a> instead.</p>
+            <p>The first row is automatically assumed to be the header row. Rows for the applicants are numbered starting at 2. If there&rsquo;s a column you want to skip in the PDF but keep in the CSV (email address or name, for example), put a single hyphen character (&ldquo;-&rdquo;) at the beginning of the cell which gives that column its title. In other words, columns with titles that start with hyphens do not appear in the output PDF.</p>
+            <form id="uploadForm">
+                <label for="file">Upload your mentor or mentee CSV:</label>
+                <input type="file" id="file" name="file" accept="text/csv" required>
+                <br>
+                <input type="checkbox" id="combine" name="combine" checked>
+                <label for="combine">Combine into one PDF</label>
+                <br>
+                <input type="checkbox" id="doublesided" name="doublesided" checked>
+                <label for="doublesided">Double-sided printing (intelligently adds blank pages to ensure that each physical sheet of paper only has data for one applicant; only used when output is combined into one PDF)</label>
+                <br>
+                <button type="button" onclick="uploadFile()">Upload</button>
+            </form>
+            <div id="waiting" style="display: none">
+                <p>This could take some time. Your download should start automatically. Don&rsquo;t close your browser window.</p>
+                <div class="lds-dual-ring"></div>
+            </div>
+            <div id="linksParagraph" style="display: none">
+                <p>If your download did not start automatically, you may need to allow pop-ups. You can also re-download the results from anything you&rsquo;ve uploaded this session using these links:</p>
+                <ul id="linksList">
+                </ul>
+                <p>The server only stores these files for ten minutes, so download them quickly before they&rsquo;re gone.</p>
+            </div>
         </div>
-
-        <div id="linksParagraph" style="display: none">
-            <p>If your download did not start automatically, you may need to allow pop-ups. You can also re-download the results from anything you&rsquo;ve uploaded this session using these links:</p>
-            <ul id="linksList">
-
-            </ul>
-            <p>The server only stores these files for ten minutes, so download them quickly before they&rsquo;re gone.</p>
+        <div class="footer">
+            <a class="ocfbanner" href="https://www.ocf.berkeley.edu">
+                <img src="http://www.ocf.berkeley.edu/hosting-logos/ocf-hosted-penguin-dark.svg" alt="Hosted by the OCF" />
+            </a>
         </div>
-    </div>
-    <div class="footer">
-        <a class="ocfbanner" href="https://www.ocf.berkeley.edu">
-            <img src="http://www.ocf.berkeley.edu/hosting-logos/ocf-hosted-penguin-dark.svg" alt="Hosted by the OCF" />
-        </a>
-    </div>
-
-    <script type="text/javascript" src="{{ url_for('static', filename='frontend-scripting.js') }}"></script>
-</body>
-
+        <script type="text/javascript" src="{{ url_for('static', filename='frontend-scripting.js') }}"></script>
+    </body>
 </html>
