@@ -65,7 +65,7 @@ def check_render(task_name):
 @app.route("/get-render/<task_name>")
 def get_render(task_name):
     if task_name not in tasks:
-        return "File not available", 404
+        return "This file is not available. The server only stores completed files for ten minutes, so it may have already been deleted.", 404
     
     (out_file, combine), _task_time = tasks[task_name]
     ext = "pdf" if combine else "zip"
