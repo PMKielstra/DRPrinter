@@ -9,6 +9,7 @@ from flask_executor import Executor
 from pdfmaker import process_csv
 
 app = flask.Flask(__name__)
+app.config['EXECUTOR_TYPE'] = 'process'
 executor = Executor(app)
 
 TOKEN_LENGTH = 12
@@ -36,8 +37,9 @@ def purge_tasks():
             del tasks[task_name]
 
 def task_render(in_file, doublesided, combine):
+    in_file_text = TextIOWrapper(in_file, encoding="utf-8")
     out_file = BytesIO()
-    process_csv(in_file, out_file, doublesided, combine)
+    process_csv(in_file_text, out_file, doublesided, combine)
     out_file.seek(0)
     return out_file, combine
 
@@ -49,7 +51,6 @@ def start_render():
     in_file = BytesIO()
     request.files[UPLOAD_FILE_NAME].save(in_file)
     in_file.seek(0)
-    in_file_text = TextIOWrapper(in_file, encoding="utf-8")
 
     form_args = map(lambda n: request.form.get(n) == "on", (DOUBLESIDED_NAME, COMBINE_NAME))
 
@@ -59,7 +60,7 @@ def start_render():
     def callback(future):
         tasks[task_name] = (future.result(), time())
 
-    executor.submit(task_render, in_file_text, *form_args).add_done_callback(callback)
+    executor.submit(task_render, in_file, *form_args).add_done_callback(callback)
 
     return jsonify({"task_name": task_name})
 
