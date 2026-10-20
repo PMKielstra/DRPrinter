@@ -19,6 +19,11 @@ UPLOAD_FILE_NAME = "file"
 DOUBLESIDED_NAME = "doublesided"
 COMBINE_NAME = "combine"
 
+# NOTE: Because we store this in process memory, we can't run more than one WSGI worker.
+# Make sure to configure the WSGI server to run this application entirely single-threaded.
+# This isn't great, but it's a lot simpler and hence more maintainable than the alternative,
+# and for software that most people use about twice a semester it's not worth setting up
+# a whole Redis install or similar.
 tasks = {}
 
 @app.before_request
