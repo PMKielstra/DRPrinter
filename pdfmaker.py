@@ -5,7 +5,6 @@ import re
 from zipfile import ZipFile
 from pdfrw import PdfReader, PdfWriter, PdfName, PdfDict
 from weasyprint import HTML
-from md2pdf.core import md2pdf
 
 
 def blank_page(template):
