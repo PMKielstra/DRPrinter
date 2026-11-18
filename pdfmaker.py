@@ -3,17 +3,8 @@ from tempfile import TemporaryDirectory
 from os import path
 import re
 from zipfile import ZipFile
-from pdfrw import PdfReader, PdfWriter, PdfName, PdfDict
+from pypdf import PdfWriter
 from weasyprint import HTML
-
-
-def blank_page(template):
-    x = PdfDict()
-    x.Type = PdfName.Page
-    x.Contents = PdfDict(stream="")
-    x.MediaBox = template.inheritable.MediaBox
-    return x
-
 
 def para(str):
     return re.sub(r"\n+", "</p><p>", str)
@@ -25,7 +16,7 @@ def process_csv(in_file, out_file, doublesided, combine):
         headers = csvreader.__next__()
 
         if combine:
-            pdf = PdfWriter(out_file)
+            pdf = PdfWriter()
         else:
             zip = ZipFile(out_file, "w")
 
@@ -50,16 +41,11 @@ def process_csv(in_file, out_file, doublesided, combine):
                 zip.write(pdf_path, pdf_name)
                 continue
 
-            pages = PdfReader(pdf_path).pages
-            pdf.addpages(pages)
-            if doublesided:
-                if bp is None:
-                    bp = blank_page(pages[0])
-
-                if len(pages) % 2 != 0:
-                    pdf.addpage(bp)
+            pdf.append(pdf_path)
+            if doublesided and pdf.get_num_pages() % 2 == 1:
+                pdf.add_blank_page()
 
         if combine:
-            pdf.write()
+            pdf.write(out_file)
         else:
             zip.close()
