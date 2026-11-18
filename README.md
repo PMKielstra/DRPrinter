@@ -8,6 +8,7 @@ To install:
 
 ```
 git clone <this repo>
+cd DRPrinter
 pip install -r requirements.txt
 ```
 
