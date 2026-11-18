@@ -6,7 +6,7 @@ from time import time
 import flask
 from flask import request, jsonify
 from flask_executor import Executor
-from pdfmaker import process_csv
+from csvprocessor import process_csv
 
 app = flask.Flask(__name__)
 app.config["EXECUTOR_TYPE"] = "process"
@@ -27,7 +27,6 @@ COMBINE_NAME = "combine"
 # a whole Redis install or similar.
 tasks = {}
 
-
 @app.before_request
 def purge_tasks():
     current_time = time()
@@ -37,14 +36,12 @@ def purge_tasks():
         if current_time - task_time > MAX_WAITING_TIME:
             del tasks[task_name]
 
-
 def task_render(in_file, doublesided, combine):
     in_file_text = TextIOWrapper(in_file, encoding="utf-8")
     out_file = BytesIO()
     process_csv(in_file_text, out_file, doublesided, combine)
     out_file.seek(0)
     return out_file, combine
-
 
 @app.route("/start-render", methods=["POST"])
 def start_render():
@@ -70,11 +67,9 @@ def start_render():
 
     return jsonify({"task_name": task_name})
 
-
 @app.route("/check-render/<task_name>")
 def check_render(task_name):
     return jsonify({"done": task_name in tasks})
-
 
 @app.route("/get-render/<task_name>")
 def get_render(task_name):
@@ -95,11 +90,9 @@ def get_render(task_name):
         download_name="Printable.{0}".format(ext),
     )
 
-
 @app.route("/")
 def frontpage():
     return flask.render_template("index.html")
-
 
 if __name__ == "__main__":
     app.run()
